@@ -8,9 +8,34 @@ function validateUrl(value) {
   const trimmedUrl = value.trim();
 
   // TODO 1: 빈 값 검증
+  if (trimmedUrl === "") {
+    return "URL을 입력해 주세요.";
+  }
+
   // TODO 2: 최대 길이 검증
+  if (trimmedUrl.length > MAX_URL_LENGTH) {
+    return "URL은 2048자 이하로 입력해 주세요.";
+  }
+
   // TODO 3: http:// 또는 https:// 시작 여부 검증
+  if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
+    return "URL은 http:// 또는 https://로 시작해야 합니다.";
+  }
+
   // TODO 4: 올바른 URL 형식 검증
+  // URL 생성자가 해석하지 못하거나, 호스트에 도메인 구분 점(.)이 없으면(e.g. http://abcde) 잘못된 형식이다.
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(trimmedUrl);
+  } catch {
+    return "올바른 URL 형식으로 입력해 주세요";
+  }
+
+  const hostname = parsedUrl.hostname;
+  const labels = hostname.split(".");
+  if (labels.length < 2 || labels.some((label) => label === "")) {
+    return "올바른 URL 형식으로 입력해 주세요";
+  }
 
   return null;
 }

@@ -5,10 +5,16 @@ export async function GET(request, { params }) {
 
   const originalUrl = await findUrlByShortCode(shortCode);
 
-  // TODO
-  // originalUrl이 존재하지 않는 경우
-  // 404 Not Found 응답을 반환하세요.
-
+  // 5주차: DB에 없는 shortCode면 Redirect 하지 않고 404 Not Found 를 반환합니다.
+  if (!originalUrl) {
+    return new Response("Not Found", {
+      status: 404,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    });
+  }
 
   return new Response(null, {
     status: 307,

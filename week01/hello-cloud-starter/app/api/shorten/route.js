@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
+import { saveUrl } from "../../../lib/db";
 
 export const runtime = "nodejs";
 
@@ -163,6 +164,10 @@ export async function POST(request) {
      * shortCode와 shortUrl을 생성합니다.
      */
     const shortCode = createShortCode(originalUrl);
+
+    // 4주차: shortCode와 originalUrl의 매핑을 Neon Postgres에 저장합니다.
+    await saveUrl(shortCode, originalUrl);
+
     const baseUrl = new URL(request.url).origin;
 
 

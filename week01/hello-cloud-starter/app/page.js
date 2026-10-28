@@ -99,7 +99,7 @@ export default function Home() {
         <div className="intro">
           <h1 id="page-title">URL Shortener</h1>
           <p>
-            긴 URL을 입력하고, 안전하게 처리할 수 있는 값인지 확인해 보세요.
+            긴 URL을 입력하면 짧은 주소로 바꿔 드려요.
           </p>
         </div>
 
@@ -148,8 +148,8 @@ export default function Home() {
         <aside className="practice-note">
           <span aria-hidden="true">✓</span>
           <p>
-            이번 주에는 <code>Route Handler</code>를 만들고 Backend API와
-            연결합니다.
+            같은 URL을 다시 줄이면 처음 만든 짧은 주소를 그대로 돌려주고,
+            이 서비스의 주소는 다시 줄일 수 없어요.
           </p>
         </aside>
       </section>

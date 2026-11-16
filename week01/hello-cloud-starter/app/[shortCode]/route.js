@@ -1,10 +1,14 @@
-import { findUrlByShortCode } from "../../lib/db";
+import { getOriginalUrl } from "../../lib/cache";
 import { recordClick } from "../../lib/stats";
 
 export async function GET(request, { params }) {
   const { shortCode } = await params;
 
-  const originalUrl = await findUrlByShortCode(shortCode);
+  // 10주차: Redis 를 먼저 보고(Cache Hit 이면 Postgres SELECT 생략), 없을 때만 Postgres 를 조회합니다.
+  // 조회와 클릭 기록에 걸린 시간을 나눠 재서 HIT·MISS 를 비교합니다.
+  const t0 = performance.now();
+  const { originalUrl, cacheStatus } = await getOriginalUrl(shortCode);
+  const t1 = performance.now();
 
   // 5주차: DB에 없는 shortCode면 Redirect 하지 않고 404 Not Found 를 반환합니다.
   if (!originalUrl) {
@@ -27,12 +31,23 @@ export async function GET(request, { params }) {
   } catch (error) {
     console.error("Failed to record click", { shortCode });
   }
+  const t2 = performance.now();
+
+  console.log({
+    shortCode,
+    cacheStatus,
+    lookupMs: (t1 - t0).toFixed(1),
+    updateMs: (t2 - t1).toFixed(1),
+    totalMs: (t2 - t0).toFixed(1),
+  });
 
   return new Response(null, {
     status: 307,
     headers: {
       Location: originalUrl,
       "Cache-Control": "no-store",
+      // 10주차: 직접 만든 Redis 캐시에서 찾았는지(HIT) 아닌지(MISS). Vercel CDN 캐시와는 다릅니다.
+      "X-Cache": cacheStatus,
     },
   });
 }

@@ -34,7 +34,9 @@ export async function getOriginalUrl(shortCode) {
   }
 
   // TODO 1. README의 Cache Hit 처리 코드를 아래에 옮겨 적으세요.
-
+  if (cachedUrl) {
+    return { originalUrl: cachedUrl, cacheStatus: "HIT" };
+  }
 
   // 2. Cache Miss: Postgres에서 조회합니다.
   const originalUrl = await findUrlByShortCode(shortCode);
@@ -43,7 +45,7 @@ export async function getOriginalUrl(shortCode) {
   if (originalUrl) {
     try {
       // TODO 2. README의 Redis 저장 코드를 아래 한 줄에 옮겨 적으세요.
-
+      await redis.set(key, originalUrl, { ex: CACHE_TTL_SECONDS });
     } catch (error) {
       console.error("Failed to write cache", {
         shortCode,
